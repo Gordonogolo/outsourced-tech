@@ -1,4 +1,4 @@
-# TechHub Pro - Complete E-Commerce Platform
+# OUTSOURCED-TECHNOLOGIES- Complete E-Commerce Platform
 
 A modern, full-featured e-commerce platform for selling tech products (hubs, switches, routers, computers, phones) and offering services (diagnostics, ISP services, repairs) with integrated M-Pesa payments, loyalty rewards, customer support chatbot, and system monitoring.
 
