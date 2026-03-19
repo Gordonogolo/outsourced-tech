@@ -1,7 +1,7 @@
 <?php
-require_once '../src/config.php';
-require_once '../src/database.php';
-require_once '../src/auth.php';
+require_once __DIR__ . '/../src/config.php';
+require_once __DIR__ . '/../src/database.php';
+require_once __DIR__ . '/../src/auth.php';
 
 require_login();
 
@@ -19,7 +19,7 @@ if (!$order) {
 }
 ?>
 
-<?php require_once '../templates/header.php'; ?>
+<?php require_once __DIR__ . '/../templates/header.php'; ?>
 
 <div class="text-center py-5">
     <i class="fas fa-check-circle fa-5x text-success mb-4"></i>

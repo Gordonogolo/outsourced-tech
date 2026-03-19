@@ -337,6 +337,9 @@ try {
 </nav>
 
 <script>
+// Define BASE_URL for JavaScript
+const BASE_URL = '<?= BASE_URL ?>';
+
 // Simple search functionality
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('globalSearch');
@@ -359,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         data.products.slice(0, 5).forEach(product => {
                             html += `
                                 <a href="product.php?slug=${product.slug}" class="search-result-item">
-                                    <img src="${product.image ? '<?= BASE_URL ?>assets/images/products/' + product.image : '<?= BASE_URL ?>assets/images/products/placeholder.jpg'}" alt="${product.name}">
+                                    <img src="${product.image ? BASE_URL + 'assets/images/products/' + product.image : BASE_URL + 'assets/images/products/placeholder.jpg'}" alt="${product.name}">
                                     <div class="item-info">
                                         <div class="item-name">${product.name}</div>
                                         <div class="item-price">KSh ${parseInt(product.price).toLocaleString()}</div>

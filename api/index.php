@@ -1,44 +1,65 @@
 <?php
-// api/index.php - API Router Entry Point
+// Vercel PHP Entry Point
+// This file handles all requests and routes them to the appropriate handler
 
-// Set security headers
-require_once __DIR__ . '/../src/security.php';
-set_security_headers();
+// Get the request URI
+$uri = $_SERVER['REQUEST_URI'];
+$path = parse_url($uri, PHP_URL_PATH);
 
-// Start session securely
-secure_session_start();
+// Remove trailing slash if present
+$path = rtrim($path, '/');
 
-// Handle CORS (adjust for production)
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-// Handle preflight
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+// If path is empty or is index, serve the home page
+if ($path === '' || $path === '/index') {
+    $_SERVER['SCRIPT_NAME'] = '/public/index.php';
+    require __DIR__ . '/public/index.php';
     exit;
 }
 
-// Include router
-require_once __DIR__ . '/../src/router.php';
-require_once __DIR__ . '/../controllers/ProductController.php';
-require_once __DIR__ . '/../controllers/OrderController.php';
+// Route static files directly
+$static_extensions = ['.css', '.js', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico', '.webp', '.woff', '.woff2', '.ttf'];
+foreach ($static_extensions as $ext) {
+    if (str_ends_with($path, $ext)) {
+        $file = __DIR__ . '/public' . $path;
+        if (file_exists($file)) {
+            $mime_types = [
+                '.css' => 'text/css',
+                '.js' => 'application/javascript',
+                '.jpg' => 'image/jpeg',
+                '.jpeg' => 'image/jpeg',
+                '.png' => 'image/png',
+                '.gif' => 'image/gif',
+                '.svg' => 'image/svg+xml',
+                '.ico' => 'image/x-icon',
+                '.webp' => 'image/webp',
+                '.woff' => 'font/woff',
+                '.woff2' => 'font/woff2',
+                '.ttf' => 'font/ttf',
+            ];
+            $mime = $mime_types[$ext] ?? 'application/octet-stream';
+            header('Content-Type: ' . $mime);
+            readfile($file);
+            exit;
+        }
+    }
+}
 
-// Create router
-$router = create_router('/api');
+// Route PHP files in public folder
+$public_path = __DIR__ . '/public' . $path . '.php';
+if (file_exists($public_path)) {
+    $_SERVER['SCRIPT_NAME'] = '/public' . $path . '.php';
+    require $public_path;
+    exit;
+}
 
-// Product routes
-$router->get('/products', 'ProductController@index');
-$router->get('/products/{id}', 'ProductController@show');
-$router->post('/products', 'ProductController@store');
-$router->put('/products/{id}', 'ProductController@update');
-$router->delete('/products/{id}', 'ProductController@destroy');
+// Route API calls
+$api_path = __DIR__ . '/api' . $path . '.php';
+if (file_exists($api_path)) {
+    $_SERVER['SCRIPT_NAME'] = '/api' . $path . '.php';
+    require $api_path;
+    exit;
+}
 
-// Order routes
-$router->post('/orders', 'OrderController@store');
-$router->get('/orders', 'OrderController@index');
-$router->get('/orders/{id}', 'OrderController@show');
-$router->put('/orders/{id}/status', 'OrderController@updateStatus');
-
-// Dispatch request
-$router->dispatch();
+// If nothing found, show 404
+http_response_code(404);
+echo "404 - Page not found";

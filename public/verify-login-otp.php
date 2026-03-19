@@ -1,29 +1,31 @@
 <?php
-// public/verify-otp.php - OTP Verification page for password reset
+// public/verify-login-otp.php - OTP Verification page for login
+ob_start();
 require_once __DIR__ . '/../src/config.php';
+require_once __DIR__ . '/../src/password.php';
 
-// DEBUG: Log session state on page load
-error_log('[DEBUG verify-otp.php] Session ID: ' . session_id());
-error_log('[DEBUG verify-otp.php] Session otp_email: ' . ($_SESSION['otp_email'] ?? 'NOT SET'));
-
-$page_title = 'Verify OTP - ' . APP_NAME;
-require_once __DIR__ . '/../templates/header.php';
-
-// Check if email is in session
-if (!isset($_SESSION['otp_email'])) {
-    // Redirect to forgot password if no email in session
-    header('Location: forgot-password.php');
+// Check if email is in session BEFORE any HTML output
+if (!isset($_SESSION['login_otp_email'])) {
+    header('Location: login-otp.php');
     exit;
 }
 
-$email = $_SESSION['otp_email'];
+$email = $_SESSION['login_otp_email'];
+
+$page_title = 'Verify OTP - ' . APP_NAME;
+require_once __DIR__ . '/../templates/header.php';
 $message = '';
 $message_type = '';
 
 // Check for resend request
 if (isset($_GET['resend']) && $_GET['resend'] === '1') {
     require_once __DIR__ . '/../src/password.php';
-    $result = request_password_reset_otp($email);
+    
+    // Generate new OTP
+    $otp = generate_otp(6);
+    store_otp($email, $otp, 10, 'login_verification');
+    $email_result = send_otp_email($email, $otp, 'login_verification');
+    
     $message = 'A new verification code has been sent to your email.';
     $message_type = 'success';
 }
@@ -31,46 +33,41 @@ if (isset($_GET['resend']) && $_GET['resend'] === '1') {
 // Handle OTP verification
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $otp = sanitize($_POST['otp'] ?? '');
-    $new_password = $_POST['new_password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
     
     if (empty($otp)) {
         $message = 'Please enter the verification code';
         $message_type = 'danger';
-    } elseif (empty($new_password)) {
-        $message = 'Please enter a new password';
-        $message_type = 'danger';
-    } elseif (strlen($new_password) < 6) {
-        $message = 'Password must be at least 6 characters';
-        $message_type = 'danger';
-    } elseif ($new_password !== $confirm_password) {
-        $message = 'Passwords do not match';
-        $message_type = 'danger';
     } else {
         require_once __DIR__ . '/../src/password.php';
         
-        // First verify the OTP
-        $verify_result = verify_password_reset_otp($email, $otp);
+        // Verify OTP
+        $verify_result = verify_otp($email, $otp, 'login_verification', 3);
         
         if (!$verify_result['success']) {
             $message = $verify_result['message'];
             $message_type = 'danger';
         } else {
-            // OTP verified, now reset the password
-            $reset_result = reset_password_with_otp($email, $new_password);
+            // OTP verified - log the user in
+            $user = fetchOne("SELECT * FROM users WHERE email = ?", [$email]);
             
-            if ($reset_result['success']) {
-                // Clear session
-                unset($_SESSION['otp_email']);
+            if ($user) {
+                // Set session variables
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_name'] = $user['full_name'];
+                $_SESSION['logged_in'] = true;
                 
-                // Show success and redirect to login
-                $message = $reset_result['message'];
-                $message_type = 'success';
+                // Clear OTP session
+                unset($_SESSION['login_otp_email']);
                 
-                // Redirect after short delay
-                header('refresh:2;url=login.php');
+                // Redirect to home or intended page
+                $redirect = $_SESSION['login_redirect'] ?? 'index.php';
+                unset($_SESSION['login_redirect']);
+                
+                header("Location: $redirect");
+                exit;
             } else {
-                $message = $reset_result['message'];
+                $message = 'User not found. Please try again.';
                 $message_type = 'danger';
             }
         }
@@ -78,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get masked email for display
-require_once __DIR__ . '/../src/password.php';
 $masked_email = mask_email($email);
 ?>
 
@@ -96,7 +92,6 @@ $masked_email = mask_email($email);
                         <div class="alert alert-<?= $message_type ?>"><?= $message ?></div>
                     <?php endif; ?>
                     
-                    <?php if (!isset($reset_result['success']) || !$reset_result['success']): ?>
                     <form method="POST" action="">
                         <div class="mb-3">
                             <label for="otp" class="form-label">Verification Code</label>
@@ -105,20 +100,8 @@ $masked_email = mask_email($email);
                                    required autocomplete="one-time-code" style="letter-spacing: 8px; font-size: 24px;">
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="new_password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="new_password" name="new_password" 
-                                   placeholder="Enter new password (min 6 characters)" required minlength="6">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
-                                   placeholder="Confirm new password" required>
-                        </div>
-                        
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">Reset Password</button>
+                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
                         </div>
                     </form>
                     
@@ -127,12 +110,11 @@ $masked_email = mask_email($email);
                         <a href="?resend=1" class="btn btn-outline-secondary btn-sm">Resend Code</a>
                     </div>
                     
-                    <div class="text-center mt-2">
-                        <a href="forgot-password.php">Use a different email</a>
+                    <div class="text-center mt-3">
+                        <a href="login-otp.php">Use a different email</a>
                     </div>
-                    <?php endif; ?>
                     
-                    <div class="text-center mt-4">
+                    <div class="text-center mt-2">
                         <a href="login.php">Back to Login</a>
                     </div>
                 </div>

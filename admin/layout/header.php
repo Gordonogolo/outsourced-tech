@@ -1,52 +1,86 @@
 <?php
 // Header Component
 // Top navigation bar with search, notifications, and user dropdown
+require_once __DIR__ . '/../../src/config.php';
+require_once __DIR__ . '/../../src/database.php';
 
 // User info (would typically come from session)
 $user_name = isset($_SESSION['admin_name']) ? $_SESSION['admin_name'] : 'Admin';
 $user_role = isset($_SESSION['admin_role']) ? $_SESSION['admin_role'] : 'Administrator';
 $user_initials = strtoupper(substr($user_name, 0, 2));
 
-// Sample notifications (would typically come from database)
-$notifications = [
-    [
-        'id' => 1,
-        'title' => 'New Order Received',
-        'text' => 'Order #1234 placed by John Doe',
-        'icon' => 'success',
-        'time' => '2 min ago'
-    ],
-    [
-        'id' => 2,
-        'title' => 'Low Stock Alert',
-        'text' => 'Product "Laptop HP 15" is running low',
-        'icon' => 'warning',
-        'time' => '15 min ago'
-    ],
-    [
-        'id' => 3,
-        'title' => 'New User Registration',
-        'text' => 'Jane Smith created a new account',
-        'icon' => 'success',
-        'time' => '1 hour ago'
-    ],
-    [
-        'id' => 4,
-        'title' => 'Payment Failed',
-        'text' => 'Payment for Order #1230 failed',
-        'icon' => 'danger',
-        'time' => '2 hours ago'
-    ]
-];
+// Get real notifications from database
+$notifications = [];
+try {
+    // Recent pending orders
+    $pending_orders = fetchAll("SELECT id, order_number, created_at FROM orders WHERE status = 'pending' ORDER BY created_at DESC LIMIT 3");
+    foreach ($pending_orders as $order) {
+        $notifications[] = [
+            'id' => 'order_' . $order['id'],
+            'title' => 'Pending Order',
+            'text' => 'Order #' . htmlspecialchars($order['order_number']) . ' awaiting processing',
+            'icon' => 'warning',
+            'time' => time_ago($order['created_at']),
+            'url' => '../orders/list.php?search=' . $order['order_number']
+        ];
+    }
+    
+    // Low stock products
+    $low_stock = fetchAll("SELECT id, name, stock, low_stock_threshold FROM products WHERE visible = 1 AND stock <= low_stock_threshold ORDER BY stock ASC LIMIT 3");
+    foreach ($low_stock as $product) {
+        $stock_status = $product['stock'] == 0 ? 'Out of Stock' : 'Low Stock';
+        $notifications[] = [
+            'id' => 'stock_' . $product['id'],
+            'title' => $stock_status,
+            'text' => htmlspecialchars($product['name']) . ' - ' . $product['stock'] . ' units left',
+            'icon' => $product['stock'] == 0 ? 'danger' : 'warning',
+            'time' => 'Now',
+            'url' => '../products/edit.php?id=' . $product['id']
+        ];
+    }
+    
+    // Recent service bookings
+    $recent_bookings = fetchAll("SELECT sb.id, sb.booking_date, s.name FROM service_bookings sb JOIN services s ON sb.service_id = s.id WHERE sb.status = 'confirmed' ORDER BY sb.booking_date DESC LIMIT 2");
+    foreach ($recent_bookings as $booking) {
+        $notifications[] = [
+            'id' => 'booking_' . $booking['id'],
+            'title' => 'New Booking',
+            'text' => htmlspecialchars($booking['name']) . ' on ' . date('M d', strtotime($booking['booking_date'])),
+            'icon' => 'success',
+            'time' => 'Today',
+            'url' => '../service-bookings/list.php'
+        ];
+    }
+    
+    // Sort notifications by time (most recent first)
+    usort($notifications, function($a, $b) {
+        return strcmp($b['time'], $a['time']);
+    });
+    
+} catch (Exception $e) {
+    // Fallback to empty if DB error
+    $notifications = [];
+}
 
 // Quick actions
 $quick_actions = [
     ['title' => 'Add Product', 'icon' => 'fa-box', 'url' => 'products/add.php'],
     ['title' => 'Add Service', 'icon' => 'fa-tools', 'url' => 'services/add.php'],
-    ['title' => 'Create Order', 'icon' => 'fa-shopping-cart', 'url' => 'orders/list.php?action=create'],
-    ['title' => 'Send Notification', 'icon' => 'fa-bell', 'url' => '#'],
-    ['title' => 'Export Data', 'icon' => 'fa-download', 'url' => '#']
+    ['title' => 'View Orders', 'icon' => 'fa-shopping-cart', 'url' => 'orders/list.php'],
+    ['title' => 'Low Stock', 'icon' => 'fa-exclamation-triangle', 'url' => 'products/list.php?stock=low']
 ];
+
+// Helper function for time ago
+function time_ago($datetime) {
+    $timestamp = strtotime($datetime);
+    $diff = time() - $timestamp;
+    
+    if ($diff < 60) return 'Just now';
+    if ($diff < 3600) return floor($diff / 60) . ' min ago';
+    if ($diff < 86400) return floor($diff / 3600) . ' hours ago';
+    if ($diff < 604800) return floor($diff / 86400) . ' days ago';
+    return date('M d', $timestamp);
+}
 ?>
 <!-- Top Navbar -->
 <header class="admin-navbar" id="navbar">

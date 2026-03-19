@@ -4,5 +4,17 @@
       "path": "/api/enhanced-cron.php",
       "schedule": "0 6 * * *"
     }
+  ],
+  "builds": [
+    {
+      "src": "api/index.php",
+      "use": "vercel-php@0.6.0"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php"
+    }
   ]
 }

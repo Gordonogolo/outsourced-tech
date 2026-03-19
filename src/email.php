@@ -1,19 +1,28 @@
 <?php
 // src/email.php - Enhanced Email System with SMTP Support
 
+// Ensure config is loaded first
+require_once __DIR__ . '/config.php';
+
 /**
  * Email configuration
+ * Note: Uses $_ENV (set by Dotenv) instead of getenv() for reliability
  */
 function get_email_config() {
+    // Helper function to get env var from $_ENV (set by Dotenv) or getenv as fallback
+    $get_env = function($key, $default = '') {
+        return $_ENV[$key] ?? getenv($key) ?: $default;
+    };
+    
     $config = [
-        'driver' => getenv('MAIL_DRIVER') ?: 'smtp',
-        'host' => getenv('MAIL_HOST') ?: 'smtp.gmail.com',
-        'port' => getenv('MAIL_PORT') ?: 587,
-        'username' => getenv('MAIL_USERNAME') ?: '',
-        'password' => getenv('MAIL_PASSWORD') ?: '',
-        'encryption' => getenv('MAIL_ENCRYPTION') ?: 'tls',
-        'from_address' => getenv('MAIL_FROM_ADDRESS') ?: 'noreply@outsourcedtechnologies.co.ke',
-        'from_name' => getenv('MAIL_FROM_NAME') ?: 'Outsourced Technologies',
+        'driver' => $get_env('MAIL_DRIVER', 'smtp'),
+        'host' => $get_env('MAIL_HOST', 'smtp.gmail.com'),
+        'port' => (int)$get_env('MAIL_PORT', 587),
+        'username' => $get_env('MAIL_USERNAME', ''),
+        'password' => $get_env('MAIL_PASSWORD', ''),
+        'encryption' => $get_env('MAIL_ENCRYPTION', 'tls'),
+        'from_address' => $get_env('MAIL_FROM_ADDRESS', 'noreply@outsourcedtechnologies.co.ke'),
+        'from_name' => $get_env('MAIL_FROM_NAME', 'Outsourced Technologies'),
     ];
     
     // Debug: Log the configuration (mask password)
@@ -44,8 +53,16 @@ function send_email($to, $subject, $body, $is_html = true, $attachments = []) {
 
 /**
  * Send email using PHP mail() function
+ * For XAMPP: Configure sendmail in php.ini or use SMTP ini settings
  */
 function send_email_phpmail($to, $subject, $body, $is_html, $config) {
+    // For local development (XAMPP), try to use Gmail SMTP via ini settings
+    if (getenv('APP_ENV') === 'development') {
+        ini_set('SMTP', 'smtp.gmail.com');
+        ini_set('smtp_port', 587);
+        ini_set('sendmail_from', $config['from_address']);
+    }
+    
     $headers = "From: {$config['from_name']} <{$config['from_address']}>\r\n";
     $headers .= "Reply-To: {$config['from_address']}\r\n";
     
@@ -496,7 +513,7 @@ function send_otp_email($email, $otp, $purpose = 'password_reset') {
         FILE_APPEND
     );
     
-    // Use SMTP if available, otherwise fallback to mail()
+    // Use SMTP (PHPMailer) for sending emails
     $result = send_email_smtp($email, $subject, $html, true, $config);
     
     // Debug: Log the result

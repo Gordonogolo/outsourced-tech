@@ -580,7 +580,7 @@ function updateCompareBar() {
     itemsContainer.innerHTML = compareItems.map(item => `
         <div class="compare-bar-item">
             <button class="remove-compare" onclick="removeFromCompare(${item.id})">×</button>
-            <img src="${item.image ? '<?= BASE_URL ?>assets/images/products/' + item.image : '<?= BASE_URL ?>assets/images/products/'}" alt="${item.name}">
+            <img src="${item.image ? BASE_URL + 'assets/images/products/' + item.image : BASE_URL + 'assets/images/products/'}" alt="${item.name}">
             <div class="item-name">${item.name}</div>
         </div>
     `).join('');

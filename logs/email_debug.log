@@ -87,3 +87,48 @@
 [2026-03-14 13:17:29] PHPMailer Exception: SMTP Error: Could not authenticate.
 [2026-03-14 13:20:27] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"","password":"(empty)","encryption":"tls","from_address":"noreply@outsourcedtechnologies.co.ke","from_name":"Outsourced Technologies"}
 [2026-03-14 13:20:31] PHPMailer Exception: SMTP Error: Could not authenticate.
+[2026-03-19 07:27:08] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"","password":"(empty)","encryption":"tls","from_address":"noreply@outsourcedtechnologies.co.ke","from_name":"Outsourced Technologies"}
+[2026-03-19 07:27:08] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: password_reset, OTP: 842489
+[2026-03-19 07:27:11] PHPMailer Exception: SMTP Error: Could not authenticate.
+[2026-03-19 07:27:11] send_otp_email result - Success: false
+[2026-03-19 07:27:11] Email send result: failed
+[2026-03-19 07:27:12] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"","password":"(empty)","encryption":"tls","from_address":"noreply@outsourcedtechnologies.co.ke","from_name":"Outsourced Technologies"}
+[2026-03-19 07:27:12] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: password_reset, OTP: 993945
+[2026-03-19 07:27:14] PHPMailer Exception: SMTP Error: Could not authenticate.
+[2026-03-19 07:27:14] send_otp_email result - Success: false
+[2026-03-19 07:27:14] Email send result: failed
+[2026-03-19 07:29:54] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"","password":"(empty)","encryption":"tls","from_address":"noreply@outsourcedtechnologies.co.ke","from_name":"Outsourced Technologies"}
+[2026-03-19 07:29:54] send_otp_email called - Email: gordi14062002@gmail.com, Purpose: password_reset, OTP: 123456
+[2026-03-19 07:29:56] send_otp_email result - Success: false
+[2026-03-19 07:30:42] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"","password":"(empty)","encryption":"tls","from_address":"noreply@outsourcedtechnologies.co.ke","from_name":"Outsourced Technologies"}
+[2026-03-19 07:30:42] send_otp_email called - Email: gordi14062002@gmail.com, Purpose: password_reset, OTP: 123456
+[2026-03-19 07:30:44] send_otp_email result - Success: false
+[2026-03-19 07:33:06] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"","password":"(empty)","encryption":"tls","from_address":"noreply@outsourcedtechnologies.co.ke","from_name":"Outsourced Technologies"}
+[2026-03-19 07:33:06] send_otp_email called - Email: gordi14062002@gmail.com, Purpose: password_reset, OTP: 123456
+[2026-03-19 07:33:08] PHPMailer Exception: SMTP Error: Could not authenticate.
+[2026-03-19 07:33:08] send_otp_email result - Success: false
+[2026-03-19 07:34:59] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"gordi14062002@gmail.com","password":"****","encryption":"tls","from_address":"gordi14062002@gmail.com","from_name":"Outsourced Technologies"}
+[2026-03-19 07:34:59] send_otp_email called - Email: gordi14062002@gmail.com, Purpose: password_reset, OTP: 123456
+[2026-03-19 07:35:03] send_otp_email result - Success: true
+[2026-03-19 07:38:09] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"gordi14062002@gmail.com","password":"****","encryption":"tls","from_address":"gordi14062002@gmail.com","from_name":"Outsourced Technologies"}
+[2026-03-19 07:38:09] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: password_reset, OTP: 813443
+[2026-03-19 07:38:14] send_otp_email result - Success: true
+[2026-03-19 07:38:14] Email send result: success
+[2026-03-19 07:38:26] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"gordi14062002@gmail.com","password":"****","encryption":"tls","from_address":"gordi14062002@gmail.com","from_name":"Outsourced Technologies"}
+[2026-03-19 07:38:26] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: password_reset, OTP: 369232
+[2026-03-19 07:38:30] send_otp_email result - Success: true
+[2026-03-19 07:38:30] Email send result: success
+[2026-03-19 07:45:06] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"gordi14062002@gmail.com","password":"****","encryption":"tls","from_address":"gordi14062002@gmail.com","from_name":"Outsourced Technologies"}
+[2026-03-19 07:45:06] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: password_reset, OTP: 815814
+[2026-03-19 07:45:12] send_otp_email result - Success: true
+[2026-03-19 07:45:12] Email send result: success
+[2026-03-19 07:45:30] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"gordi14062002@gmail.com","password":"****","encryption":"tls","from_address":"gordi14062002@gmail.com","from_name":"Outsourced Technologies"}
+[2026-03-19 07:45:30] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: password_reset, OTP: 539286
+[2026-03-19 07:45:34] send_otp_email result - Success: true
+[2026-03-19 07:45:34] Email send result: success
+[2026-03-19 07:58:01] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"gordi14062002@gmail.com","password":"****","encryption":"tls","from_address":"gordi14062002@gmail.com","from_name":"Outsourced Technologies"}
+[2026-03-19 07:58:01] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: login_verification, OTP: 263455
+[2026-03-19 07:58:05] send_otp_email result - Success: true
+[2026-03-19 08:10:28] get_email_config: {"driver":"smtp","host":"smtp.gmail.com","port":587,"username":"gordi14062002@gmail.com","password":"****","encryption":"tls","from_address":"gordi14062002@gmail.com","from_name":"Outsourced Technologies"}
+[2026-03-19 08:10:28] send_otp_email called - Email: gordonogolo@gmail.com, Purpose: login_verification, OTP: 630748
+[2026-03-19 08:10:33] send_otp_email result - Success: true

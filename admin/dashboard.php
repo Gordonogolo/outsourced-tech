@@ -29,6 +29,10 @@ try {
 
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM orders WHERE status = 'pending'");
     $stats['pending_orders'] = $stmt->fetch()['total'];
+    
+    // Low stock count for stats
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM products WHERE visible = 1 AND stock <= low_stock_threshold");
+    $stats['low_stock_count'] = $stmt->fetch()['total'];
 
     // Get recent orders
     $stmt = $pdo->query("
@@ -63,6 +67,20 @@ try {
         LIMIT 5
     ");
     $topProducts = $stmt->fetchAll();
+    
+    // Low stock alerts - products below threshold
+    $stmt = $pdo->query("
+        SELECT p.id, p.name, p.stock, p.low_stock_threshold, p.sku,
+               c.name as category_name,
+               (SELECT filename FROM product_images WHERE product_id = p.id AND is_main = 1 LIMIT 1) as image
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.visible = 1 AND p.stock <= p.low_stock_threshold
+        ORDER BY p.stock ASC
+        LIMIT 10
+    ");
+    $lowStockProducts = $stmt->fetchAll();
+    $lowStockCount = count($lowStockProducts);
 } catch (PDOException $e) {
     $stats = [
         'total_products' => 0,
@@ -114,6 +132,8 @@ $admin_name = isset($_SESSION['admin_name']) ? $_SESSION['admin_name'] : 'Admin'
         .bg-users { background: rgba(16, 185, 129, 0.15); color: #10b981; }
         .bg-revenue { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
         .bg-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .bg-low-stock { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .low-stock-item { border-left: 3px solid #ef4444; }
     </style>
 </head>
 <body>
@@ -230,6 +250,82 @@ $admin_name = isset($_SESSION['admin_name']) ? $_SESSION['admin_name'] : 'Admin'
                 </div>
             </div>
         </div>
+
+        <!-- Low Stock Alerts Section -->
+        <?php if (!empty($lowStockProducts)): ?>
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock Alerts</h5>
+                        <span class="badge bg-white text-danger"><?= $lowStockCount ?> item(s)</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>SKU</th>
+                                        <th>Category</th>
+                                        <th>Current Stock</th>
+                                        <th>Threshold</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($lowStockProducts as $product): ?>
+                                        <tr class="low-stock-item">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <?php if (!empty($product['image'])): ?>
+                                                        <img src="../assets/images/products/<?= htmlspecialchars($product['image']) ?>" 
+                                                             class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                                    <?php else: ?>
+                                                        <div class="bg-light me-2 d-flex align-items-center justify-content-center" 
+                                                             style="width: 40px; height: 40px; border-radius: 4px;">
+                                                            <i class="fas fa-image text-muted"></i>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <strong><?= htmlspecialchars($product['name']) ?></strong>
+                                                </div>
+                                            </td>
+                                            <td><code><?= htmlspecialchars($product['sku'] ?? 'N/A') ?></code></td>
+                                            <td><?= htmlspecialchars($product['category_name'] ?? 'Uncategorized') ?></td>
+                                            <td>
+                                                <span class="badge bg-<?= $product['stock'] == 0 ? 'danger' : 'warning' ?>">
+                                                    <?= $product['stock'] ?> units
+                                                </span>
+                                            </td>
+                                            <td><?= $product['low_stock_threshold'] ?> units</td>
+                                            <td>
+                                                <?php if ($product['stock'] == 0): ?>
+                                                    <span class="badge bg-danger">Out of Stock</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-warning text-dark">Low Stock</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <a href="products/edit.php?id=<?= $product['id'] ?>" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i> Restock
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <a href="products/list.php?stock=low" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-list me-1"></i> View All Low Stock Items
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
 
         <!-- Charts and Top Products Row -->
         <div class="row g-3 mb-4">

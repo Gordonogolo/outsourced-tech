@@ -39,25 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // DEBUG: Log the full result
         error_log('[DEBUG forgot-password.php] Result: ' . print_r($result, true));
         
-        // If successful
+        // If successful - always redirect to verify page (email is now working)
         if ($result['success'] && isset($result['email'])) {
             // Store email in session for the verify page
             $_SESSION['otp_email'] = $email_or_phone;
-            error_log('[DEBUG forgot-password.php] Set otp_email in session: ' . $email_or_phone);
             
-            // In development mode, store debug_otp for display on same page
-            if (isset($result['debug_otp'])) {
-                $_SESSION['debug_otp'] = $result['debug_otp'];
-                error_log('[DEBUG forgot-password.php] Set debug_otp in session: ' . $result['debug_otp']);
-                
-                // Don't redirect - show OTP on same page for development
-            } else {
-                error_log('[DEBUG forgot-password.php] debug_otp NOT SET in result - checking APP_ENV: ' . getenv('APP_ENV'));
-                
-                // In production, redirect to verify-otp page
-                header('Location: verify-otp.php');
-                exit;
-            }
+            // Redirect to verify-otp page
+            header('Location: verify-otp.php');
+            exit;
         } else {
             // Store error message in session
             $_SESSION['forgot_password_message'] = $result['message'];
@@ -69,10 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Normal page load - retrieve any message from session
 $message = $_SESSION['forgot_password_message'] ?? '';
 $message_type = $_SESSION['forgot_password_message_type'] ?? '';
-
-// For development mode: check if debug_otp was set in session
-$debug_otp = $_SESSION['debug_otp'] ?? null;
-unset($_SESSION['debug_otp']);
 
 // Clear the message from session
 unset($_SESSION['forgot_password_message'], $_SESSION['forgot_password_message_type']);
@@ -99,27 +84,17 @@ require_once __DIR__ . '/../templates/header.php';
                         <div class="alert alert-<?= $message_type ?>"><?= $message ?></div>
                     <?php endif; ?>
                     
-                    <?php if ($debug_otp): ?>
-                        <div class="alert alert-success">
-                            <strong>Development Mode:</strong> Your OTP is: <strong><?= $debug_otp ?></strong>
-                            <br><small>In production, this would be sent to your email.</small>
+                    <form method="POST" action="">
+                        <div class="mb-3">
+                            <label for="email_or_phone" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email_or_phone" name="email_or_phone" 
+                                   placeholder="Enter your email address" required>
                         </div>
-                        <div class="text-center mb-4">
-                            <a href="verify-otp.php" class="btn btn-primary">Proceed to Verify OTP</a>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Send Verification Code</button>
                         </div>
-                    <?php else: ?>
-                        <form method="POST" action="">
-                            <div class="mb-3">
-                                <label for="email_or_phone" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="email_or_phone" name="email_or_phone" 
-                                       placeholder="Enter your email address" required>
-                            </div>
-                            
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary btn-lg">Send Verification Code</button>
-                            </div>
-                        </form>
-                    <?php endif; ?>
+                    </form>
                     
                     <div class="text-center mt-4">
                         <a href="login.php">Remember your password? Login</a>

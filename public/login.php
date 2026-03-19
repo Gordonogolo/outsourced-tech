@@ -83,6 +83,13 @@ if (!check_rate_limit('login_' . $identifier, 5, 300)) {
                 <p class="text-center">
                     <a href="forgot-password.php">Forgot your password?</a>
                 </p>
+                <hr>
+                <p class="text-center mb-1">
+                    <strong>Or login with:</strong>
+                </p>
+                <p class="text-center">
+                    <a href="login-otp.php" class="btn btn-outline-primary">Login with OTP</a>
+                </p>
             </div>
         </div>
     </div>

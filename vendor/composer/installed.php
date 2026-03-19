@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'outsourced/tech-ecommerce',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'f273d3dc609e564a6512fda2ce1723e3d5dcba02',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -38,9 +38,9 @@
             'dev_requirement' => false,
         ),
         'outsourced/tech-ecommerce' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'f273d3dc609e564a6512fda2ce1723e3d5dcba02',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
