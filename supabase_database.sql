@@ -93,6 +93,17 @@ CREATE TABLE order_items (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Payments Table
+CREATE TABLE payments (
+    id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    payment_method VARCHAR(50),
+    transaction_id VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Services Table
 CREATE TABLE services (
     id SERIAL PRIMARY KEY,
@@ -147,6 +158,17 @@ CREATE TABLE delivery_zones (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Delivery Tracking Table
+CREATE TABLE delivery_tracking (
+    id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL,
+    status VARCHAR(50),
+    location VARCHAR(255),
+    estimated_delivery TIMESTAMP,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Loyalty Tiers Table
 CREATE TABLE loyalty_tiers (
     id SERIAL PRIMARY KEY,
@@ -180,6 +202,15 @@ CREATE TABLE otp_verifications (
     verified_at TIMESTAMP
 );
 
+-- Password Resets Table
+CREATE TABLE password_resets (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Product Reviews Table
 CREATE TABLE product_reviews (
     id SERIAL PRIMARY KEY,
@@ -195,6 +226,15 @@ CREATE TABLE product_reviews (
 CREATE TABLE wishlists (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Product Comparisons Table
+CREATE TABLE product_comparisons (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    session_id VARCHAR(64),
     product_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -219,11 +259,106 @@ CREATE TABLE abandoned_carts (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Product Interactions Table
+CREATE TABLE product_interactions (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    user_id INT,
+    session_id VARCHAR(64),
+    interaction_type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Product Recommendations Table
+CREATE TABLE product_recommendations (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    recommended_product_id INT NOT NULL,
+    score DECIMAL(5,2),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Similar Products Table
+CREATE TABLE similar_products (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    similar_product_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Product Search Table
+CREATE TABLE product_search (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    search_term VARCHAR(255),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Newsletter Subscribers Table
 CREATE TABLE newsletter_subscribers (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     subscribed BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Chatbot Conversations Table
+CREATE TABLE chatbot_conversations (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    session_id VARCHAR(64),
+    user_message TEXT NOT NULL,
+    bot_response TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Activity Logs Table
+CREATE TABLE activity_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    action VARCHAR(100) NOT NULL,
+    description TEXT,
+    ip_address VARCHAR(50),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Admin Users Table
+CREATE TABLE admin_users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    role VARCHAR(50) DEFAULT 'admin',
+    last_login TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Inventory Alerts Table
+CREATE TABLE inventory_alerts (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    alert_type VARCHAR(50),
+    previous_stock INT,
+    current_stock INT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Refunds Table
+CREATE TABLE refunds (
+    id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    reason TEXT,
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- SMS Log Table
+CREATE TABLE sms_log (
+    id SERIAL PRIMARY KEY,
+    phone VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -247,3 +382,6 @@ INSERT INTO delivery_zones (name, description, delivery_fee, free_delivery_thres
 ('Athi River', 'Athi River and nearby areas', 300, 8000),
 ('Nairobi East', 'East Nairobi areas', 500, 10000),
 ('Other Areas', 'Other locations', 1000, 20000);
+
+INSERT INTO admin_users (username, password_hash, email, role) VALUES
+('admin', '$2y$10$abcdefghijklmnopqrstuv', 'admin@outsourcedtechnologies.co.ke', 'super_admin');
