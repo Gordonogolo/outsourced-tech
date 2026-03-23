@@ -1,7 +1,7 @@
 // sw.js - Service Worker for Push Notifications
 
 const CACHE_NAME = 'outsourced-v1';
-const OFFLINE_URL = '/outsourced/public/offline.html';
+const OFFLINE_URL = 'http://192.168.1.143/outsourced/public/offline.html';
 
 // Install event
 self.addEventListener('install', (event) => {
@@ -10,10 +10,10 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll([
-                '/outsourced/',
-                '/outsourced/public/',
-                '/outsourced/assets/css/style.css',
-                '/outsourced/assets/js/app.js',
+                'http://192.168.1.143/outsourced/',
+                'http://192.168.1.143/outsourced/public/',
+                'http://192.168.1.143/outsourced/assets/css/style.css',
+                'http://192.168.1.143/outsourced/assets/js/app.js',
             ]);
         })
     );

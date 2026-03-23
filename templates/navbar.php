@@ -285,10 +285,20 @@ try {
                 <li class="nav-item">
                     <a class="nav-link" href="track-order.php">Track Order</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contact.php">Contact</a>
+                </li>
             </ul>
             
             <!-- Right Side -->
             <ul class="navbar-nav align-items-center">
+                <!-- WhatsApp Link -->
+                <li class="nav-item">
+                    <a class="nav-link text-success" href="https://wa.me/254712345678" target="_blank" title="Chat on WhatsApp">
+                        <i class="fab fa-whatsapp fa-lg"></i>
+                    </a>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link position-relative" href="cart.php">
                         <i class="fas fa-shopping-cart fa-lg"></i>
@@ -337,8 +347,10 @@ try {
 </nav>
 
 <script>
-// Define BASE_URL for JavaScript
-const BASE_URL = '<?= BASE_URL ?>';
+// Define BASE_URL for JavaScript (check if already defined to avoid duplicate declaration error)
+if (typeof window.BASE_URL === 'undefined') {
+    window.BASE_URL = '<?= BASE_URL ?>';
+}
 
 // Simple search functionality
 document.addEventListener('DOMContentLoaded', function() {

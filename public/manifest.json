@@ -1,0 +1,101 @@
+{
+    "name": "Outsourced Technologies",
+    "short_name": "OutsourcedTech",
+    "description": "Premium Tech Products & Expert Services in Mlolongo",
+    "start_url": "/outsourced/public/index.php",
+    "display": "standalone",
+    "background_color": "#0a0a0f",
+    "theme_color": "#00d4ff",
+    "orientation": "portrait-primary",
+    "scope": "/outsourced/",
+    "icons": [
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "72x72",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "96x96",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "128x128",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "144x144",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "152x152",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "384x384",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+            "sizes": "512x512",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["shopping", "business"],
+    "shortcuts": [
+        {
+            "name": "Shop Products",
+            "short_name": "Shop",
+            "description": "Browse our tech products",
+            "url": "/outsourced/public/products.php",
+            "icons": [
+                {
+                    "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Book Services",
+            "short_name": "Services",
+            "description": "Book a repair service",
+            "url": "/outsourced/public/services.php",
+            "icons": [
+                {
+                    "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "My Cart",
+            "short_name": "Cart",
+            "description": "View your shopping cart",
+            "url": "/outsourced/public/cart.php",
+            "icons": [
+                {
+                    "src": "/outsourced/assets/images/products/lap-mac-001.jpg",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ],
+    "prefer_related_applications": false
+}

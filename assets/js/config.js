@@ -1,5 +1,5 @@
 // Configuration for the application
-const BASE_URL = 'http://localhost/outsourced/public/';
+const BASE_URL = 'http://192.168.1.143/outsourced/public/';
 
 // For API calls - relative path
 const API_URL = '../api/v1/';
