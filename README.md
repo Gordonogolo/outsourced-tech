@@ -325,6 +325,7 @@ Customers earn 1 point for every KES 100 spent.
 
 ## License
 
-This project is proprietary software for TechHub Pro.
+This project is proprietary software for GORDON AMOS OGOLO
+.
 
 ## Contact
